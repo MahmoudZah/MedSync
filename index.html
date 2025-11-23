@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedSync - Smart Medicine Redistribution</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="assets/imgs/logo.jpg" alt="MedSync Logo" class="rounded-circle">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="marketplace.html">Find Medicine</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">For Pharmacies</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a href="login.html" class="btn btn-outline-primary me-2">Log In</a>
+                        <a href="signup.html" class="btn btn-primary">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <h1 class="hero-title">
+                        Don't let medicine <br>
+                        <span>go to waste.</span>
+                    </h1>
+                    <p class="lead text-muted mb-4">
+                        MedSync connects pharmacies with excess stock to patients and businesses who need it. 
+                        Save money, save the environment.
+                    </p>
+                    
+                    <div class="search-container mb-4">
+                        <i class="bi bi-search ms-3 text-muted"></i>
+                        <input type="text" class="form-control search-input" placeholder="Search for medicine (e.g. Panadol)...">
+                        <button class="btn btn-primary rounded-pill px-4">Search</button>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <a href="marketplace.html" class="btn btn-outline-primary">
+                            <i class="bi bi-bag-plus me-2"></i>I'm a Buyer
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="bi bi-shop me-2"></i>I'm a Seller
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <!-- Placeholder for a Hero Image/Illustration -->
+                    <img src="https://placehold.co/600x400/3498DB/white?text=MedSync+Platform" alt="MedSync Platform" class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center g-4">
+                <div class="col-md-4">
+                    <div class="p-4">
+                        <div class="display-4 text-primary-blue mb-3"><i class="bi bi-shield-check"></i></div>
+                        <h3>Verified Sellers</h3>
+                        <p class="text-muted">Every pharmacy is licensed and verified. Safe medicine, guaranteed.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4">
+                        <div class="display-4 text-secondary-green mb-3"><i class="bi bi-currency-dollar"></i></div>
+                        <h3>Save up to 60%</h3>
+                        <p class="text-muted">Get deep discounts on near-expiry medicines that are perfectly safe to use.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4">
+                        <div class="display-4 text-muted mb-3"><i class="bi bi-globe-americas"></i></div>
+                        <h3>Eco-Friendly</h3>
+                        <p class="text-muted">Prevent pharmaceutical waste from polluting our rivers and soil.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Listings (B2C) -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <h2 class="mb-1">Expiring Deals Near You</h2>
+                    <p class="text-muted mb-0">Grab them before they are gone.</p>
+                </div>
+                <a href="marketplace.html" class="btn btn-link text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            <div id="featured-listings" class="row">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-5 text-center bg-light">
+        <div class="container">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="card-body p-5">
+                    <h2 class="mb-3">Are you a Pharmacy?</h2>
+                    <p class="lead text-muted mb-4">Turn your stagnant stock into cash and help your community.</p>
+                    <button class="btn btn-primary btn-lg">Join MedSync Partner Network</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-muted border-top mt-5">
+        <div class="container">
+            <p class="mb-0">&copy; 2025 MedSync. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App JS -->
+    <script src="js/app.js"></script>
+</body>
+</html>
+
