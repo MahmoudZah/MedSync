@@ -126,21 +126,6 @@
           </div>
         </div>
 
-        <div
-          class="form-floating mb-3 text-start"
-          id="pharmacyNameField"
-          style="display: none"
-        >
-          <input
-            type="text"
-            class="form-control"
-            id="pharmacyNameInput"
-            placeholder="Pharmacy Name"
-            required
-          />
-          <label for="pharmacyNameInput">Pharmacy Name</label>
-        </div>
-
         <div class="form-floating mb-3 text-start">
           <input
             type="email"
@@ -161,20 +146,6 @@
             required
           />
           <label for="passwordInput">Password</label>
-        </div>
-
-        <div
-          class="form-floating mb-4 text-start"
-          id="locationField"
-          style="display: none"
-        >
-          <select class="form-select" id="locationInput" required>
-            <option value="" disabled selected>Select Location</option>
-            <option value="Cairo">Cairo</option>
-            <option value="Giza">Giza</option>
-            <option value="Alexandra">Alexandra</option>
-          </select>
-          <label for="locationInput">Location</label>
         </div>
 
         <div
@@ -209,9 +180,7 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
     />
-    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/cart.js"></script>
     <script>
       function selectRole(role) {
         document
@@ -225,17 +194,9 @@
         if (role === "pharmacy") {
           licenseField.style.display = "block";
           document.getElementById("licenseInput").required = true;
-          document.getElementById("pharmacyNameField").style.display = "block";
-          document.getElementById("pharmacyNameInput").required = true;
-          document.getElementById("locationField").style.display = "block";
-          document.getElementById("locationInput").required = true;
         } else {
           licenseField.style.display = "none";
           document.getElementById("licenseInput").required = false;
-          document.getElementById("pharmacyNameField").style.display = "none";
-          document.getElementById("pharmacyNameInput").required = false;
-          document.getElementById("locationField").style.display = "none";
-          document.getElementById("locationInput").required = false;
         }
       }
       document.addEventListener("DOMContentLoaded", () => {
@@ -248,10 +209,6 @@
           document.getElementById("pharmacyRoleCard").classList.add("active");
           licenseField.style.display = "block";
           document.getElementById("licenseInput").required = true;
-          document.getElementById("pharmacyNameField").style.display = "block";
-          document.getElementById("pharmacyNameInput").required = true;
-          document.getElementById("locationField").style.display = "block";
-          document.getElementById("locationInput").required = true;
         } else {
           document
             .querySelectorAll(".role-card")
@@ -259,10 +216,6 @@
           document.getElementById("patientRoleCard").classList.add("active");
           licenseField.style.display = "none";
           document.getElementById("licenseInput").required = false;
-          document.getElementById("pharmacyNameField").style.display = "none";
-          document.getElementById("pharmacyNameInput").required = false;
-          document.getElementById("locationField").style.display = "none";
-          document.getElementById("locationInput").required = false;
         }
       });
     </script>
