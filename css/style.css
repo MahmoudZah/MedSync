@@ -66,7 +66,7 @@ h6,
 
 .nav-link:hover,
 .nav-link.active {
-  color: var(--primary-blue);
+  color: var(--primary-blue) !important;
 }
 
 /* Buttons */
@@ -75,6 +75,10 @@ h6,
   font-weight: 500;
   padding: 0.5rem 1.5rem;
   transition: all 0.3s ease;
+}
+.cart-btn:hover {
+  color: var(--primary-blue) !important;
+  background-color: transparent !important;
 }
 
 .btn-primary {
@@ -175,28 +179,72 @@ h6,
 
 /* Dashboard Sidebar */
 .sidebar {
-  background-color: var(--text-dark);
-  color: white;
-  min-height: 100vh;
-  padding-top: 2rem;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1060 !important; /* Higher than navbar and modal backdrop */
+  width: 280px;
+  padding: 0;
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
 }
 
 .sidebar-link {
-  color: rgba(255, 255, 255, 0.7);
-  padding: 12px 24px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  transition: all 0.3s;
-  border-left: 4px solid transparent;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
-.sidebar-link:hover,
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateX(5px);
+}
+
 .sidebar-link.active {
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
-  border-left-color: var(--secondary-green);
+  background-color: var(--primary-blue);
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+}
+
+/* Ensure internal elements don't glitch during transition */
+.sidebar-link,
+.sidebar-link * {
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+.sidebar-link i {
+  margin-right: 12px;
+  font-size: 1.2rem;
+}
+
+.main-content {
+  margin-left: 280px;
+  padding: 2rem;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+@media (max-width: 1200px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding-top: 80px; /* Space for mobile toggle */
+  }
 }
 
 /* Expiry Badge */

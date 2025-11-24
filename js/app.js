@@ -2,202 +2,135 @@
 // Mock Database
 // In browsers, 'require' is not defined. Instead, fetch JSON using fetch API:
 
-const db = {
-  "drugs": [
+const defaultDb = {
+  drugs: [
     {
-      "id"  : 1,
-      "name": "Augmentin 1g",
-      "generic": "Amoxicillin/Clavulanic Acid",
-      "image": "https://placehold.co/100x100/e0e0e0/333?text=Augmentin"
+      id: 1,
+      name: "Augmentin 1g",
+      generic: "Amoxicillin/Clavulanic Acid",
+      category: "Antibiotics",
+      image: "https://placehold.co/100x100/e0e0e0/333?text=Augmentin",
     },
     {
-      "id": 2,
-      "name": "Panadol Extra",
-      "generic": "Paracetamol/Caffeine",
-      "image": "https://placehold.co/100x100/e0e0e0/333?text=Panadol"
+      id: 2,
+      name: "Panadol Extra",
+      generic: "Paracetamol/Caffeine",
+      category: "Pain Killers",
+      image: "https://placehold.co/100x100/e0e0e0/333?text=Panadol",
     },
     {
-      "id": 3,
-      "name": "Cataflam 50mg",
-      "generic": "Diclofenac Potassium",
-      "image": "https://placehold.co/100x100/e0e0e0/333?text=Cataflam"
+      id: 3,
+      name: "Cataflam 50mg",
+      generic: "Diclofenac Potassium",
+      category: "Pain Killers",
+      image: "https://placehold.co/100x100/e0e0e0/333?text=Cataflam",
     },
     {
-      "id": 4,
-      "name": "Insulin Lantus",
-      "generic": "Insulin Glargine",
-      "image": "https://placehold.co/100x100/e0e0e0/333?text=Insulin"
+      id: 4,
+      name: "Insulin Lantus",
+      generic: "Insulin Glargine",
+      category: "Chronic Diseases",
+      image: "https://placehold.co/100x100/e0e0e0/333?text=Insulin",
     },
     {
-      "id": 5,
-      "name": "Concor 5mg",
-      "generic": "Bisoprolol",
-      "image": "https://placehold.co/100x100/e0e0e0/333?text=Concor"
+      id: 5,
+      name: "Concor 5mg",
+      generic: "Bisoprolol",
+      category: "Chronic Diseases",
+      image: "https://placehold.co/100x100/e0e0e0/333?text=Concor",
+    },
+  ],
+  pharmacies: [
+    {
+      id: 101,
+      name: "El Ezaby Pharmacy",
+      location: "Maadi, Cairo",
+      // distance: "1.2 km", // Removed distance
     }
   ],
-  "pharmacies": [
+  listings: [
     {
-      "id": 101,
-      "name": "El Ezaby Pharmacy",
-      "location": "Maadi, Cairo",
-      "distance": "1.2 km"
+      id: 1,
+      pharmacyId: 101,
+      drugId: 1,
+      quantity: 50,
+      expiryDate: "2025-12-01",
+      originalPrice: 90,
+      discountPrice: 54,
+      status: "Available",
     },
     {
-      "id": 102,
-      "name": "Seif Pharmacy",
-      "location": "Nasr City, Cairo",
-      "distance": "3.5 km"
+      id: 3,
+      pharmacyId: 101,
+      drugId: 4,
+      quantity: 10,
+      expiryDate: "2025-11-20",
+      originalPrice: 600,
+      discountPrice: 300,
+      status: "Available",
     },
-    {
-      "id": 103,
-      "name": "19011 Pharmacy",
-      "location": "Dokki, Giza",
-      "distance": "5.0 km"
-    }
   ],
-  "listings": [
+  users: [
     {
-      "id": 1,
-      "pharmacyId": 101,
-      "drugId": 1,
-      "quantity": 50,
-      "expiryDate": "2025-12-01",
-      "originalPrice": 90,
-      "discountPrice": 54,
-      "status": "Available"
+      id: 1,
+      name: "Dr. Ahmed",
+      email: "pharmacy@test.com",
+      password: "123",
+      role: "pharmacy",
+      license: "12345",
+      pharmacyId: 101,
     },
     {
-      "id": 2,
-      "pharmacyId": 102,
-      "drugId": 2,
-      "quantity": 120,
-      "expiryDate": "2026-03-15",
-      "originalPrice": 35,
-      "discountPrice": 25,
-      "status": "Available"
+      id: 2,
+      name: "Sarah User",
+      email: "patient@test.com",
+      password: "123",
+      role: "patient",
     },
-    {
-      "id": 3,
-      "pharmacyId": 101,
-      "drugId": 4,
-      "quantity": 10,
-      "expiryDate": "2025-11-20",
-      "originalPrice": 600,
-      "discountPrice": 300,
-      "status": "Available"
-    },
-    {
-      "id": 4,
-      "pharmacyId": 103,
-      "drugId": 3,
-      "quantity": 200,
-      "expiryDate": "2026-08-01",
-      "originalPrice": 45,
-      "discountPrice": 40,
-      "status": "Available"
-    }
   ],
-  "users": [
-    {
-      "id": 1,
-      "name": "Dr. Ahmed",
-      "email": "pharmacy@test.com",
-      "password": "123",
-      "role": "pharmacy",
-      "license": "12345"
-    },
-    {
-      "id": 2,
-      "name": "Sarah User",
-      "email": "patient@test.com",
-      "password": "123",
-      "role": "patient"
-    }
-  ]
+};
+
+// Initialize DB from LocalStorage or Default
+let db = JSON.parse(localStorage.getItem("medsync_db"));
+if (!db) {
+  db = defaultDb;
+  localStorage.setItem("medsync_db", JSON.stringify(db));
+}
+
+function saveDb() {
+  localStorage.setItem("medsync_db", JSON.stringify(db));
 }
 // --- AUTHENTICATION LOGIC ---
 
-function handleLogin(event) {
-  event.preventDefault();
-  const email = document.getElementById("emailInput").value;
-  const password = document.getElementById("passwordInput").value;
-
-  const user = db.users.find((u) => u.email === email && u.password === password);
-  if (!user) {
-    alert("Invalid email or password.");
-    return;
-  }
-
-  localStorage.setItem("currentUser", JSON.stringify(user));
-  window.location.href = user.role === "pharmacy" ? "dashboard.html" : "index.html";
-}
-
-function handleSignup(event) {
-  event.preventDefault();
-  const email = document.getElementById("emailInput").value;
-  const role = document.getElementById("roleInput").value;
-  const name = `${document.getElementById("firstName").value} ${
-    document.getElementById("lastName").value
-  }`;
-
-  if (db.users.find((u) => u.email === email)) {
-    alert("Email already exists.");
-    return;
-  }
-
-  const newUser = {
-    id: db.users.length + 1,
-    name: name,
-    email: email,
-    password: document.getElementById("passwordInput").value,
-    role: role,
-    license: role === "pharmacy" ? document.getElementById("licenseInput").value : null,
-  };
-
-  if (role === "pharmacy") {
-    newUser.license = document.getElementById("licenseInput").value;
-  }
-
-  db.users.push(newUser);
-  localStorage.setItem("currentUser", JSON.stringify(newUser));
-
-  window.location.href = role === "pharmacy" ? "dashboard.html" : "index.html";
-}
-
-function checkAuthStatus() {
-  const userStr = localStorage.getItem("currentUser");
-  if (!userStr) return;
-
-  const user = JSON.parse(userStr);
-  const navAuthSection = document.querySelector(".navbar-nav .ms-lg-3");
-
-  if (navAuthSection) {
-    navAuthSection.innerHTML = `
-            <div class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle me-2"></i>${user.name}
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    ${
-                      user.role === "pharmacy"
-                        ? '<li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>'
-                        : ""
-                    }
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
-                </ul>
-            </div>
-        `;
-  }
-}
-
-function logout() {
-  localStorage.removeItem("currentUser");
-  window.location.href = "index.html";
-}
 
 // --- UTILITIES ---
+
+function showToast(message, type = "info") {
+  // Types: success, error, warning, info
+  let backgroundColor;
+  switch (type) {
+    case "success":
+      backgroundColor = "#2ecc71"; // Green
+      break;
+    case "error":
+      backgroundColor = "#e74c3c"; // Red
+      break;
+    case "warning":
+      backgroundColor = "#f1c40f"; // Yellow
+      break;
+    default:
+      backgroundColor = "#3498db"; // Blue
+  }
+
+  Toastify({
+    text: message,
+    duration: 3000,
+    gravity: "top", // `top` or `bottom`
+    position: "right", // `left`, `center` or `right`
+    backgroundColor: backgroundColor,
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+  }).showToast();
+}
 
 function getExpiryStatus(dateString) {
   const today = new Date();
@@ -221,12 +154,18 @@ function formatCurrency(amount) {
 
 // --- RENDER LOGIC ---
 
-function renderListings(containerId, limit = null) {
+function renderListings(containerId, limit = null, listingsData = db.listings) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  let listings = db.listings;
+  let listings = listingsData;
   if (limit) listings = listings.slice(0, limit);
+
+  if (listings.length === 0) {
+    container.innerHTML =
+      '<div class="col-12 text-center py-5"><p class="text-muted">No medicines found matching your criteria.</p></div>';
+    return;
+  }
 
   container.innerHTML = listings
     .map((listing) => {
@@ -243,8 +182,8 @@ function renderListings(containerId, limit = null) {
         expiryStatus.text
       }</span>
                             <small class="text-muted">${
-                              pharmacy.distance
-                            }</small>
+                              listing.quantity
+                            } left</small>
                         </div>
                         <h5 class="card-title mb-1">${drug.name}</h5>
                         <p class="text-muted small mb-3">${drug.generic}</p>
@@ -263,9 +202,9 @@ function renderListings(containerId, limit = null) {
                                   listing.discountPrice
                                 )}</span>
                             </div>
-                            <button class="btn btn-sm btn-outline-primary" onclick="alert('Reserving ${
-                              drug.name
-                            } from ${pharmacy.name}')">Reserve</button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="openReserveModal(${
+                              listing.id
+                            })">Reserve</button>
                         </div>
                     </div>
                 </div>
@@ -273,6 +212,69 @@ function renderListings(containerId, limit = null) {
         `;
     })
     .join("");
+}
+
+function applyFilters() {
+  const location = document.getElementById("locationFilter").value;
+  const searchInput = document.getElementById("searchInput");
+  const search = searchInput ? searchInput.value.toLowerCase() : "";
+
+  const expiryCheckboxes = document.querySelectorAll(".expiry-filter:checked");
+  const expiryValues = Array.from(expiryCheckboxes).map((cb) =>
+    parseInt(cb.value)
+  );
+
+  const categoryCheckboxes = document.querySelectorAll(
+    ".category-filter:checked"
+  );
+  const categories = Array.from(categoryCheckboxes).map((cb) => cb.value);
+
+  const filtered = db.listings.filter((listing) => {
+    const drug = db.drugs.find((d) => d.id === listing.drugId);
+    const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
+
+    // Location Filter
+    if (location && !pharmacy.location.includes(location)) return false;
+
+    // Search Filter
+    if (
+      search &&
+      !drug.name.toLowerCase().includes(search) &&
+      !drug.generic.toLowerCase().includes(search)
+    )
+      return false;
+
+    // Category Filter
+    if (categories.length > 0 && !categories.includes(drug.category))
+      return false;
+
+    // Expiry Filter
+    if (expiryValues.length > 0) {
+      const today = new Date();
+      const expiry = new Date(listing.expiryDate);
+      const diffMonths = (expiry - today) / (1000 * 60 * 60 * 24 * 30);
+
+      let matchesExpiry = false;
+      if (expiryValues.includes(3) && diffMonths <= 3) matchesExpiry = true;
+      if (expiryValues.includes(6) && diffMonths > 3 && diffMonths <= 6)
+        matchesExpiry = true;
+
+      if (!matchesExpiry) return false;
+    }
+
+    return true;
+  });
+
+  renderListings("all-listings", null, filtered);
+}
+
+function handleHomeSearch() {
+  const input = document.getElementById("homeSearchInput");
+  if (input && input.value.trim()) {
+    window.location.href = `marketplace.html?search=${encodeURIComponent(
+      input.value.trim()
+    )}`;
+  }
 }
 
 // Initialize
@@ -298,6 +300,68 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("all-listings")
   ) {
     renderListings("featured-listings", 4);
+    // On marketplace page, we might filter based on URL params, so we wait for step 6
+    if (!document.getElementById("searchInput")) {
+      renderListings("all-listings");
+    }
+  }
+
+  // Render Cart if on cart page
+  if (document.getElementById("cart-items")) {
+    renderCart();
+  }
+
+  // Update cart count on load
+  updateCartCount();
+
+  // 5. Bind Filters
+  const applyFiltersBtn = document.getElementById("applyFiltersBtn");
+  if (applyFiltersBtn) {
+    applyFiltersBtn.addEventListener("click", applyFilters);
+  }
+
+  const searchBtn = document.getElementById("searchBtn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", applyFilters);
+  }
+
+  // 6. Handle URL Search Params (for Marketplace)
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchParam = urlParams.get("search");
+  const searchInput = document.getElementById("searchInput");
+
+  if (searchInput && searchParam) {
+    searchInput.value = searchParam;
+    applyFilters();
+  } else if (document.getElementById("all-listings")) {
+    // If no search param, render all
     renderListings("all-listings");
   }
+
+  // 7. Bind Home Search
+  const homeSearchBtn = document.getElementById("homeSearchBtn");
+  if (homeSearchBtn) {
+    homeSearchBtn.addEventListener("click", handleHomeSearch);
+  }
+
+  // Allow pressing Enter in home search
+  const homeInput = document.getElementById("homeSearchInput");
+  if (homeInput) {
+    homeInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") handleHomeSearch();
+    });
+  }
+
+  // Dashboard Initialization
+  if (document.getElementById("inventoryTableBody")) {
+    renderDashboard();
+    // Populate Add Batch Modal Drugs
+    const select = document.getElementById("newDrugId");
+    if (select) {
+      select.innerHTML = db.drugs
+        .map((d) => `<option value="${d.id}">${d.name}</option>`)
+        .join("");
+    }
+  }
 });
+
