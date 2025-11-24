@@ -2,12 +2,11 @@ function renderDashboard() {
   const userStr = localStorage.getItem("currentUser");
   if (!userStr) return;
   const user = JSON.parse(userStr);
-
+  console.log(user);
   const tbody = document.getElementById("inventoryTableBody");
   if (!tbody) return;
 
   const listings = db.listings.filter((l) => l.pharmacyId === user.pharmacyId);
-  console.log(listings);
   tbody.innerHTML = listings
     .map((listing) => {
       const drug = db.drugs.find((d) => d.id === listing.drugId);
@@ -41,7 +40,7 @@ function renderDashboard() {
     })
     .join("");
   //render expiring soon batches
-  const expiringSoonBatches = listings.filter((l) => getExpiryStatus(l.expiryDate).class === "expiry-critical").length;
+  const expiringSoonBatches = listings.length > 0 ? listings.filter((l) => getExpiryStatus(l.expiryDate).class === "expiry-critical").length : 0;
   document.getElementById("expiringSoonBatches").innerText = expiringSoonBatches;
 
   //render pharmacy name

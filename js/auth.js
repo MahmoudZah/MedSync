@@ -29,7 +29,8 @@ function handleSignup(event) {
     showToast("Email already exists.", "error");
     return;
   }
-  let n = 101
+  let pharmacyId = 101 + db.pharmacies.length;
+
   const newUser = {
     id: db.users.length + 1,
     name: name,
@@ -40,17 +41,19 @@ function handleSignup(event) {
       role === "pharmacy"
         ? document.getElementById("licenseInput").value
         : null,
-    pharmacyId: role === "pharmacy" ? ++n : null,
+    pharmacyId: role === "pharmacy" ? pharmacyId : null,
   };
   if (role === "pharmacy") {
     const pharmacyName = document.getElementById("pharmacyNameInput").value;
     const location = document.getElementById("locationInput").value;
     const newPharmacy = {
-      id: n,
+      id: pharmacyId,
       name: pharmacyName,
       location: location,
     };
     db.pharmacies.push(newPharmacy);
+    saveDb();
+
   }
 
 
