@@ -1,23 +1,39 @@
-
 function addToCart(listingId, quantity) {
   const listing = db.listings.find((l) => l.id === listingId);
   if (!listing) return;
 
+  // Check stock availability
+  if (listing.quantity <= 0 || listing.status === "Sold Out") {
+    showToast("This item is out of stock.", "error");
+    return;
+  }
+
+  const requestedQty = parseInt(quantity);
+  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const existingItem = cart.find((item) => item.listingId === listingId);
+  const currentCartQty = existingItem ? existingItem.quantity : 0;
+
+  // Check if total quantity exceeds available stock
+  if (currentCartQty + requestedQty > listing.quantity) {
+    showToast(
+      `Only ${listing.quantity - currentCartQty} items available.`,
+      "warning"
+    );
+    return;
+  }
+
   const drug = db.drugs.find((d) => d.id === listing.drugId);
   const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
 
-  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-  const existingItem = cart.find((item) => item.listingId === listingId);
   if (existingItem) {
-    existingItem.quantity += parseInt(quantity);
+    existingItem.quantity += requestedQty;
   } else {
     cart.push({
       listingId,
       drugName: drug.name,
       pharmacyName: pharmacy.name,
       price: listing.discountPrice,
-      quantity: parseInt(quantity),
+      quantity: requestedQty,
       image: drug.image,
     });
   }
@@ -51,9 +67,7 @@ function updateCartCount() {
       div.innerHTML = `
             <a href="cart.html" id="cartBtn" class="btn btn-outline-secondary cart-btn border-0">
                 <i class="bi bi-cart3 fs-5"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount" style="display: none;">
-                    0
-                </span>
+                <span class="position-absolute bg-danger rounded-circle" id="cartCount" style="display: none; width: 10px; height: 10px; top: 5px; right: 5px;"></span>
             </a>
           `;
       navAuthSection.parentNode.insertBefore(div, navAuthSection);
@@ -62,7 +76,6 @@ function updateCartCount() {
 
     const badge = document.getElementById("cartCount");
     if (badge) {
-      badge.innerText = count;
       badge.style.display = count > 0 ? "inline-block" : "none";
     }
   }
@@ -178,4 +191,84 @@ function openReserveModal(listingId) {
 
   const modal = new bootstrap.Modal(document.getElementById("reserveModal"));
   modal.show();
+}
+
+function handleCheckout() {
+  const userStr = localStorage.getItem("currentUser");
+  if (!userStr) {
+    showToast("Please log in to checkout.", "warning");
+    return;
+  }
+  const user = JSON.parse(userStr);
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  if (cart.length === 0) {
+    showToast("Your cart is empty.", "warning");
+    return;
+  }
+
+  // Group items by pharmacy
+  const ordersByPharmacy = {};
+  cart.forEach((item) => {
+    const listing = db.listings.find((l) => l.id === item.listingId);
+    if (!listing) return;
+
+    if (!ordersByPharmacy[listing.pharmacyId]) {
+      ordersByPharmacy[listing.pharmacyId] = {
+        items: [],
+        total: 0,
+      };
+    }
+    ordersByPharmacy[listing.pharmacyId].items.push({
+      listingId: item.listingId,
+      drugId: listing.drugId,
+      quantity: item.quantity,
+      price: item.price,
+    });
+    ordersByPharmacy[listing.pharmacyId].total += item.price * item.quantity;
+  });
+
+  // Create orders and reduce stock
+  Object.keys(ordersByPharmacy).forEach((pharmacyId) => {
+    const orderData = ordersByPharmacy[pharmacyId];
+
+    // Create order
+    const newOrder = {
+      id:
+        db.orders.length > 0 ? Math.max(...db.orders.map((o) => o.id)) + 1 : 1,
+      pharmacyId: parseInt(pharmacyId),
+      buyerId: user.id,
+      buyerName: user.name,
+      items: orderData.items,
+      total: orderData.total,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    };
+    db.orders.push(newOrder);
+
+    // Reduce stock for each item
+    orderData.items.forEach((item) => {
+      const listing = db.listings.find((l) => l.id === item.listingId);
+      if (listing) {
+        listing.quantity -= item.quantity;
+        // Remove listing if out of stock
+        if (listing.quantity <= 0) {
+          listing.status = "Sold Out";
+        }
+      }
+    });
+  });
+
+  saveDb();
+
+  // Clear cart
+  localStorage.removeItem("cart");
+  updateCartCount();
+
+  showToast("Order placed successfully!", "success");
+
+  // Redirect to marketplace or refresh
+  setTimeout(() => {
+    window.location.href = "marketplace.html";
+  }, 1500);
 }

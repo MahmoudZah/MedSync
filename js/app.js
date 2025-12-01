@@ -45,8 +45,12 @@ const defaultDb = {
       id: 101,
       name: "El Ezaby Pharmacy",
       location: "Maadi, Cairo",
-      // distance: "1.2 km", // Removed distance
-    }
+    },
+    {
+      id: 102,
+      name: "Seif Pharmacy",
+      location: "Nasr City, Cairo",
+    },
   ],
   listings: [
     {
@@ -60,14 +64,35 @@ const defaultDb = {
       status: "Available",
     },
     {
-      id: 3,
+      id: 2,
       pharmacyId: 101,
       drugId: 4,
       quantity: 10,
-      expiryDate: "2025-11-20",
+      expiryDate: "2025-12-15",
       originalPrice: 600,
       discountPrice: 300,
       status: "Available",
+    },
+    {
+      id: 3,
+      pharmacyId: 102,
+      drugId: 2,
+      quantity: 100,
+      expiryDate: "2026-03-01",
+      originalPrice: 45,
+      discountPrice: 30,
+      status: "Available",
+    },
+  ],
+  orders: [
+    {
+      id: 1,
+      pharmacyId: 101,
+      buyerId: 2,
+      items: [{ listingId: 1, drugId: 1, quantity: 5, price: 54 }],
+      total: 270,
+      status: "completed",
+      createdAt: "2025-11-15T10:30:00Z",
     },
   ],
   users: [
@@ -78,7 +103,7 @@ const defaultDb = {
       password: "123",
       role: "pharmacy",
       license: "12345",
-      pharmacyId: 101
+      pharmacyId: 101,
     },
     {
       id: 2,
@@ -86,6 +111,15 @@ const defaultDb = {
       email: "patient@test.com",
       password: "123",
       role: "patient",
+    },
+    {
+      id: 3,
+      name: "Dr. Mohamed",
+      email: "pharmacy2@test.com",
+      password: "123",
+      role: "pharmacy",
+      license: "67890",
+      pharmacyId: 102,
     },
   ],
 };
@@ -95,12 +129,17 @@ let db = JSON.parse(localStorage.getItem("medsync_db"));
 if (!db) {
   db = defaultDb;
   localStorage.setItem("medsync_db", JSON.stringify(db));
+} else {
+  // Ensure orders array exists for older saved data
+  if (!db.orders) {
+    db.orders = [];
+    localStorage.setItem("medsync_db", JSON.stringify(db));
+  }
 }
 
 function saveDb() {
   localStorage.setItem("medsync_db", JSON.stringify(db));
 }
-
 
 // --- UTILITIES ---
 
@@ -157,7 +196,10 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  let listings = listingsData;
+  // Filter out sold out items
+  let listings = listingsData.filter(
+    (l) => l.quantity > 0 && l.status !== "Sold Out"
+  );
   if (limit) listings = listings.slice(0, limit);
 
   if (listings.length === 0) {
@@ -229,6 +271,9 @@ function applyFilters() {
   const categories = Array.from(categoryCheckboxes).map((cb) => cb.value);
 
   const filtered = db.listings.filter((listing) => {
+    // Filter out sold out items
+    if (listing.quantity <= 0 || listing.status === "Sold Out") return false;
+
     const drug = db.drugs.find((d) => d.id === listing.drugId);
     const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
 
@@ -361,7 +406,19 @@ document.addEventListener("DOMContentLoaded", () => {
         .map((d) => `<option value="${d.id}">${d.name}</option>`)
         .join("");
     }
+    // Update orders badge
+    const userStr = localStorage.getItem("currentUser");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const pendingOrders = db.orders.filter(
+        (o) => o.pharmacyId === user.pharmacyId && o.status === "pending"
+      );
+      const ordersBadge = document.getElementById("ordersBadge");
+      if (ordersBadge) {
+        ordersBadge.textContent = pendingOrders.length;
+        ordersBadge.style.display =
+          pendingOrders.length > 0 ? "inline" : "none";
+      }
+    }
   }
 });
-
-

@@ -1,4 +1,3 @@
-
 function handleLogin(event) {
   event.preventDefault();
   const email = document.getElementById("emailInput").value;
@@ -14,7 +13,7 @@ function handleLogin(event) {
 
   localStorage.setItem("currentUser", JSON.stringify(user));
   window.location.href =
-    user.role === "pharmacy" ? "dashboard.html" : "index.html";
+    user.role === "pharmacy" ? "dashboard.html" : "marketplace.html";
 }
 
 function handleSignup(event) {
@@ -61,7 +60,7 @@ function handleSignup(event) {
   saveDb();
   localStorage.setItem("currentUser", JSON.stringify(newUser));
 
-  window.location.href = role === "pharmacy" ? "dashboard.html" : "index.html";
+  window.location.href = role === "pharmacy" ? "dashboard.html" : "marketplace.html";
 }
 
 function checkAuthStatus() {
@@ -80,17 +79,30 @@ function checkAuthStatus() {
                 <ul class="dropdown-menu dropdown-menu-end">
                     ${
                       user.role === "pharmacy"
-                        ? '<li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>'
+                        ? '<li><a class="dropdown-item" href="dashboard.html"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li> <li><a class="dropdown-item" href="marketplace.html"><i class="bi bi-shop me-2"></i>Marketplace</a></li> <li><hr class="dropdown-divider"></li>'
                         : ""
                     }
-                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
+                    
+                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                 </ul>
             </div>
         `;
+  }
+
+  // Hide "Home" nav link for logged-in users
+  const homeLink = document.querySelector('.navbar-nav .nav-link[href="index.html"]');
+  if (homeLink) {
+    homeLink.style.display = 'none';
+  }
+
+  // Update brand link based on user role
+  const brandLink = document.querySelector('.navbar-brand');
+  if (brandLink) {
+    brandLink.href = user.role === 'pharmacy' ? 'dashboard.html' : 'marketplace.html';
   }
 }
 
 function logout() {
   localStorage.removeItem("currentUser");
-  window.location.href = "index.html";
+  window.location.href = "login.html";
 }

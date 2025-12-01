@@ -265,11 +265,11 @@
     <script src="js/cart.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const cta = document.getElementById("cta");
-        if (localStorage.getItem("currentUser")) {
-          cta.style.display = "none";
-        } else {
-          cta.style.display = "block";
+        const userStr = localStorage.getItem("currentUser");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          // Redirect logged-in users to their appropriate page
+          window.location.href = user.role === "pharmacy" ? "dashboard.html" : "marketplace.html";
         }
       });
     </script>
