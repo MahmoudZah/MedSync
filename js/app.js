@@ -3,12 +3,41 @@
 // In browsers, 'require' is not defined. Instead, fetch JSON using fetch API:
 
 const defaultDb = {
+  // Subscription Packages
+  packages: [
+    {
+      id: "seller_basic",
+      name: "Seller Basic",
+      description: "Sell OTC medicines to patients (B2C)",
+      priceMonthly: 299,
+      priceAnnual: 2990,
+      features: ["Sell OTC medicines", "Dashboard access", "Order management"],
+      allowsSelling: true,
+      allowsB2BBuying: false,
+    },
+    {
+      id: "b2b_pro",
+      name: "B2B Pro Bundle",
+      description: "Full access: Sell B2C/B2B + Buy restricted medicines",
+      priceMonthly: 799,
+      priceAnnual: 7990,
+      features: [
+        "Everything in Seller Basic",
+        "Sell to businesses (B2B)",
+        "Buy restricted medicines",
+        "Priority support",
+      ],
+      allowsSelling: true,
+      allowsB2BBuying: true,
+    },
+  ],
   drugs: [
     {
       id: 1,
       name: "Augmentin 1g",
       generic: "Amoxicillin/Clavulanic Acid",
       category: "Antibiotics",
+      type: "OTC", // Over-the-counter, anyone can buy
       image: "https://placehold.co/100x100/e0e0e0/333?text=Augmentin",
     },
     {
@@ -16,6 +45,7 @@ const defaultDb = {
       name: "Panadol Extra",
       generic: "Paracetamol/Caffeine",
       category: "Pain Killers",
+      type: "OTC",
       image: "https://placehold.co/100x100/e0e0e0/333?text=Panadol",
     },
     {
@@ -23,6 +53,7 @@ const defaultDb = {
       name: "Cataflam 50mg",
       generic: "Diclofenac Potassium",
       category: "Pain Killers",
+      type: "OTC",
       image: "https://placehold.co/100x100/e0e0e0/333?text=Cataflam",
     },
     {
@@ -30,6 +61,7 @@ const defaultDb = {
       name: "Insulin Lantus",
       generic: "Insulin Glargine",
       category: "Chronic Diseases",
+      type: "Restricted", // Only B2B licensed buyers
       image: "https://placehold.co/100x100/e0e0e0/333?text=Insulin",
     },
     {
@@ -37,7 +69,24 @@ const defaultDb = {
       name: "Concor 5mg",
       generic: "Bisoprolol",
       category: "Chronic Diseases",
+      type: "Restricted",
       image: "https://placehold.co/100x100/e0e0e0/333?text=Concor",
+    },
+    {
+      id: 6,
+      name: "Morphine 10mg",
+      generic: "Morphine Sulfate",
+      category: "Controlled Substances",
+      type: "Restricted",
+      image: "https://placehold.co/100x100/e0e0e0/333?text=Morphine",
+    },
+    {
+      id: 7,
+      name: "Tramadol 50mg",
+      generic: "Tramadol Hydrochloride",
+      category: "Controlled Substances",
+      type: "Restricted",
+      image: "https://placehold.co/100x100/e0e0e0/333?text=Tramadol",
     },
   ],
   pharmacies: [
@@ -62,6 +111,7 @@ const defaultDb = {
       originalPrice: 90,
       discountPrice: 54,
       status: "Available",
+      listingType: "B2C", // Available to everyone
     },
     {
       id: 2,
@@ -72,6 +122,7 @@ const defaultDb = {
       originalPrice: 600,
       discountPrice: 300,
       status: "Available",
+      listingType: "B2B", // Only for licensed buyers with B2B subscription
     },
     {
       id: 3,
@@ -82,6 +133,29 @@ const defaultDb = {
       originalPrice: 45,
       discountPrice: 30,
       status: "Available",
+      listingType: "B2C",
+    },
+    {
+      id: 4,
+      pharmacyId: 102,
+      drugId: 6,
+      quantity: 20,
+      expiryDate: "2026-06-01",
+      originalPrice: 250,
+      discountPrice: 150,
+      status: "Available",
+      listingType: "B2B",
+    },
+    {
+      id: 5,
+      pharmacyId: 101,
+      drugId: 7,
+      quantity: 30,
+      expiryDate: "2026-04-15",
+      originalPrice: 180,
+      discountPrice: 100,
+      status: "Available",
+      listingType: "B2B",
     },
   ],
   orders: [
@@ -104,6 +178,7 @@ const defaultDb = {
       role: "pharmacy",
       license: "12345",
       pharmacyId: 101,
+      subscription: { packageId: "b2b_pro", status: "active", billingCycle: "monthly" },
     },
     {
       id: 2,
@@ -111,6 +186,7 @@ const defaultDb = {
       email: "patient@test.com",
       password: "123",
       role: "patient",
+      subscription: null, // Patients don't need subscriptions
     },
     {
       id: 3,
@@ -120,6 +196,7 @@ const defaultDb = {
       role: "pharmacy",
       license: "67890",
       pharmacyId: 102,
+      subscription: { packageId: "seller_basic", status: "active", billingCycle: "annual" },
     },
   ],
 };
@@ -190,16 +267,55 @@ function formatCurrency(amount) {
   return `${amount} EGP`;
 }
 
+// --- USER PERMISSION HELPERS ---
+
+function getCurrentUser() {
+  const userStr = localStorage.getItem("currentUser");
+  return userStr ? JSON.parse(userStr) : null;
+}
+
+function isLicensedRole(role) {
+  return ["pharmacy", "hospital", "doctor"].includes(role);
+}
+
+function getUserPackage(user) {
+  if (!user || !user.subscription || user.subscription.status !== "active") {
+    return null;
+  }
+  return db.packages.find((p) => p.id === user.subscription.packageId);
+}
+
+function canUserBuyB2B(user) {
+  const pkg = getUserPackage(user);
+  return pkg && pkg.allowsB2BBuying;
+}
+
+function canUserSell(user) {
+  const pkg = getUserPackage(user);
+  return pkg && pkg.allowsSelling;
+}
+
 // --- RENDER LOGIC ---
 
 function renderListings(containerId, limit = null, listingsData = db.listings) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // Filter out sold out items
-  let listings = listingsData.filter(
-    (l) => l.quantity > 0 && l.status !== "Sold Out"
-  );
+  const currentUser = getCurrentUser();
+  const canBuyB2B = canUserBuyB2B(currentUser);
+  const isLicensedUser = currentUser && isLicensedRole(currentUser.role);
+  const isPatient = !currentUser || currentUser.role === "patient";
+
+  // Filter listings based on user type
+  let listings = listingsData.filter((l) => {
+    if (l.quantity <= 0 || l.status === "Sold Out") return false;
+
+    // Patients should NOT see B2B listings at all
+    if (isPatient && l.listingType === "B2B") return false;
+
+    return true;
+  });
+
   if (limit) listings = listings.slice(0, limit);
 
   if (listings.length === 0) {
@@ -213,18 +329,22 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
       const drug = db.drugs.find((d) => d.id === listing.drugId);
       const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
       const expiryStatus = getExpiryStatus(listing.expiryDate);
+      const isB2B = listing.listingType === "B2B";
 
-      return `
+      // Only show blurred for unsubscribed BUSINESSES (not patients)
+      const isLockedForBusiness = isB2B && !canBuyB2B && isLicensedUser;
+
+      if (isLockedForBusiness) {
+        // Show blurred placeholder for B2B items - ONLY for unsubscribed businesses
+        return `
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
+                <div class="card h-100 border-warning position-relative" style="overflow: hidden;">
+                    <div class="card-body" style="filter: blur(4px); pointer-events: none;">
                         <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="expiry-badge ${expiryStatus.class}">${
-        expiryStatus.text
-      }</span>
-                            <small class="text-muted">${
-                              listing.quantity
-                            } left</small>
+                            <div class="d-flex gap-2">
+                              <span class="badge bg-warning text-dark">B2B Exclusive</span>
+                            </div>
+                            <small class="text-muted">${listing.quantity} left</small>
                         </div>
                         <h5 class="card-title mb-1">${drug.name}</h5>
                         <p class="text-muted small mb-3">${drug.generic}</p>
@@ -236,16 +356,48 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
 
                         <div class="d-flex justify-content-between align-items-end mt-3">
                             <div>
-                                <small class="text-muted text-decoration-line-through d-block">${formatCurrency(
-                                  listing.originalPrice
-                                )}</small>
-                                <span class="text-secondary-green fw-bold fs-5">${formatCurrency(
-                                  listing.discountPrice
-                                )}</span>
+                                <small class="text-muted text-decoration-line-through d-block">${formatCurrency(listing.originalPrice)}</small>
+                                <span class="text-secondary-green fw-bold fs-5">${formatCurrency(listing.discountPrice)}</span>
                             </div>
-                            <button class="btn btn-sm btn-outline-primary" onclick="openReserveModal(${
-                              listing.id
-                            })">Reserve</button>
+                        </div>
+                    </div>
+                    <!-- Overlay -->
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center" style="background: rgba(255,255,255,0.85);">
+                        <i class="bi bi-lock-fill text-warning fs-1 mb-2"></i>
+                        <p class="fw-bold mb-1 text-center px-3">B2B Exclusive Deal</p>
+                        <p class="text-muted small text-center px-3 mb-2">Subscribe to B2B Pro to unlock exclusive deals</p>
+                        <a href="packages.html" class="btn btn-warning btn-sm">Upgrade to B2B Pro</a>
+                    </div>
+                </div>
+            </div>
+        `;
+      }
+
+      // Regular visible listing
+      return `
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 ${isB2B ? 'border-warning' : ''}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="expiry-badge ${expiryStatus.class}">${expiryStatus.text}</span>
+                            <small class="text-muted">${listing.quantity} left</small>
+                        </div>
+                        ${isB2B ? '<div class="mb-2"><span class="badge bg-warning text-dark"><i class="bi bi-briefcase-fill me-1"></i>B2B Only</span></div>' : ''}
+                        
+                        <h5 class="card-title mb-1">${drug.name}</h5>
+                        <p class="text-muted small mb-3">${drug.generic}</p>
+                        
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-geo-alt me-2 text-primary-blue"></i>
+                            <small>${pharmacy.name}</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-end mt-3">
+                            <div>
+                                <small class="text-muted text-decoration-line-through d-block">${formatCurrency(listing.originalPrice)}</small>
+                                <span class="text-secondary-green fw-bold fs-5">${formatCurrency(listing.discountPrice)}</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="openReserveModal(${listing.id})">Reserve</button>
                         </div>
                     </div>
                 </div>
@@ -253,6 +405,133 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
         `;
     })
     .join("");
+}
+
+// Render Ad Placeholder Section for patients and unsubscribed businesses
+function renderAdPlaceholders(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const currentUser = getCurrentUser();
+  const hasActiveSubscription = currentUser && currentUser.subscription && currentUser.subscription.status === "active";
+
+  // Show ads for: patients, guests, or businesses without active subscription
+  if (hasActiveSubscription) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "block";
+  container.innerHTML = `
+    <div class="row g-3">
+      <!-- Ad 1: Health Insurance -->
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 180px;">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <span class="badge bg-light text-dark mb-2">Ad</span>
+              <h6 class="fw-bold mb-1">HealthGuard Insurance</h6>
+              <p class="small mb-0 opacity-75">Protect your family with comprehensive health coverage starting at 299 EGP/month</p>
+            </div>
+            <a href="#" class="btn btn-light btn-sm mt-2 align-self-start">Learn More</a>
+          </div>
+        </div>
+      </div>
+      <!-- Ad 2: Vitamin Supplement -->
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; min-height: 180px;">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <span class="badge bg-light text-dark mb-2">Ad</span>
+              <h6 class="fw-bold mb-1">VitaBoost Daily</h6>
+              <p class="small mb-0 opacity-75">Complete multivitamin for immunity. 30% OFF this month!</p>
+            </div>
+            <a href="#" class="btn btn-light btn-sm mt-2 align-self-start">Shop Now</a>
+          </div>
+        </div>
+      </div>
+      <!-- Ad 3: Pharmacy App -->
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; min-height: 180px;">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <span class="badge bg-light text-dark mb-2">Ad</span>
+              <h6 class="fw-bold mb-1">PharmaExpress Delivery</h6>
+              <p class="small mb-0 opacity-75">Get medicines delivered to your door in 30 minutes. Free delivery on first order!</p>
+            </div>
+            <a href="#" class="btn btn-light btn-sm mt-2 align-self-start">Download App</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Render Google Ads style sidebar/bottom banner
+function renderGoogleAdBanner(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const currentUser = getCurrentUser();
+  const hasActiveSubscription = currentUser && currentUser.subscription && currentUser.subscription.status === "active";
+
+  if (hasActiveSubscription) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "block";
+  container.innerHTML = `
+    <div class="card border-0 shadow-sm" style="background: #f8f9fa;">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>Advertisement</span>
+          <span class="badge bg-secondary" style="font-size: 0.65rem;">Ads</span>
+        </div>
+        <div class="text-center p-3" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 8px;">
+          <p class="text-white fw-bold mb-1" style="font-size: 0.9rem;">🏥 MediCare Plus</p>
+          <p class="text-light small mb-2" style="opacity: 0.8;">Premium healthcare plans for your family</p>
+          <a href="#" class="btn btn-warning btn-sm">Get 50% Off</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Render horizontal bottom ad banner
+function renderBottomAdBanner(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const currentUser = getCurrentUser();
+  const hasActiveSubscription = currentUser && currentUser.subscription && currentUser.subscription.status === "active";
+
+  if (hasActiveSubscription) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "block";
+  container.innerHTML = `
+    <div class="card border-0 shadow" style="background: linear-gradient(90deg, #00b4db 0%, #0083b0 100%);">
+      <div class="card-body py-3">
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="badge bg-white text-dark">Ad</span>
+          </div>
+          <div class="col">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div class="text-white">
+                <span class="fw-bold">💊 PharmaDirect</span>
+                <span class="ms-2 opacity-75">Free delivery on orders above 200 EGP!</span>
+              </div>
+              <a href="#" class="btn btn-light btn-sm">Order Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function applyFilters() {
@@ -348,6 +627,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!document.getElementById("searchInput")) {
       renderListings("all-listings");
     }
+  }
+
+  // 5. Render Ad Placeholders (for patients and unsubscribed businesses)
+  if (document.getElementById("ad-placeholders")) {
+    renderAdPlaceholders("ad-placeholders");
+  }
+
+  // 6. Render Google Ads (sidebar and bottom banner)
+  if (document.getElementById("google-ad-sidebar")) {
+    renderGoogleAdBanner("google-ad-sidebar");
+  }
+  if (document.getElementById("bottom-ad-banner")) {
+    renderBottomAdBanner("bottom-ad-banner");
   }
 
   // Render Cart if on cart page

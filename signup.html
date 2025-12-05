@@ -1,270 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign Up - MedSync</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
-    />
-    <link rel="stylesheet" href="css/style.css" />
-    <style>
-      body {
-        background-color: #f0f2f5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 2rem 0;
-      }
-      .auth-card {
-        width: 100%;
-        max-width: 500px;
-        padding: 2rem;
-        border-radius: 16px;
-        background: white;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      }
-      .auth-logo {
-        width: 70px;
-        object-fit: cover;
-        margin-bottom: 1rem;
-      }
-      .role-card {
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        padding: 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: left;
-      }
-      .role-card:hover,
-      .role-card.active {
-        border-color: var(--primary-blue);
-        background-color: rgba(52, 152, 219, 0.05);
-      }
-      .role-icon {
-        font-size: 1.5rem;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-      }
-      .role-card.active .role-icon {
-        color: var(--primary-blue);
-      }
-    </style>
-  </head>
-  <body>
-    <div class="auth-card text-center">
-      <a href="index.html" class="text-decoration-none">
-      <img
-        src="assets/imgs/logo.jpg"
-        alt="MedSync"
-        class=" auth-logo"
-      />
-      </a>
-      <h3 class="fw-bold mb-1">Create Account</h3>
-      <p class="text-muted mb-4">
-        Join the network to save medicine and money.
-      </p>
 
-      <form id="signupForm">
-        <!-- Role Selection -->
-        <div class="row g-3 mb-4">
-          <div class="col-6">
-            <div
-              class="role-card active"
-              id="patientRoleCard"
-              onclick="selectRole('patient')"
-            >
-              <div class="role-icon"><i class="bi bi-person-heart"></i></div>
-              <h6 class="fw-bold mb-1">Patient</h6>
-              <small class="text-muted">Find medicine.</small>
-            </div>
-          </div>
-          <div class="col-6">
-            <div
-              class="role-card"
-              id="pharmacyRoleCard"
-              onclick="selectRole('pharmacy')"
-            >
-              <div class="role-icon"><i class="bi bi-shop"></i></div>
-              <h6 class="fw-bold mb-1">Pharmacy</h6>
-              <small class="text-muted">Sell & Buy stock.</small>
-            </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - MedSync</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      background-color: #f0f2f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .auth-logo {
+      width: 70px;
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+
+    .role-card {
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .role-card:hover,
+    .role-card.active {
+      border-color: var(--primary-blue);
+      background-color: rgba(52, 152, 219, 0.05);
+    }
+
+    .role-icon {
+      font-size: 1.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .role-card.active .role-icon {
+      color: var(--primary-blue);
+    }
+
+    .business-type-select {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="auth-card text-center">
+    <a href="index.html" class="text-decoration-none">
+      <img src="assets/imgs/logo.jpg" alt="MedSync" class="auth-logo" />
+    </a>
+    <h3 class="fw-bold mb-1">Create Account</h3>
+    <p class="text-muted mb-4">
+      Join the network to save medicine and money.
+    </p>
+
+    <form id="signupForm">
+      <!-- Role Selection -->
+      <p class="text-muted small mb-2 text-start">I am a:</p>
+      <div class="row g-3 mb-4">
+        <div class="col-6">
+          <div class="role-card active" id="patientRoleCard" onclick="selectRole('patient')">
+            <div class="role-icon"><i class="bi bi-person-heart"></i></div>
+            <h6 class="fw-bold mb-1">Patient</h6>
+            <small class="text-muted">Buy medicines at discount</small>
           </div>
         </div>
-        <input type="hidden" id="roleInput" value="patient" />
-
-        <div class="row g-2">
-          <div class="col-md-6">
-            <div class="form-floating mb-3 text-start">
-              <input
-                type="text"
-                class="form-control"
-                id="firstName"
-                placeholder="John"
-                required
-              />
-              <label for="firstName">First Name</label>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-floating mb-3 text-start">
-              <input
-                type="text"
-                class="form-control"
-                id="lastName"
-                placeholder="Doe"
-                required
-              />
-              <label for="lastName">Last Name</label>
-            </div>
+        <div class="col-6">
+          <div class="role-card" id="businessRoleCard" onclick="selectRole('business')">
+            <div class="role-icon"><i class="bi bi-building"></i></div>
+            <h6 class="fw-bold mb-1">Business</h6>
+            <small class="text-muted">Buy & Sell (Licensed)</small>
           </div>
         </div>
+      </div>
 
-        <div
-          class="form-floating mb-4 text-start"
-          id="pharmacyNameField"
-          style="display: none"
-        >
-          <input
-            type="text"
-            class="form-control"
-            id="pharmacyNameInput"
-            placeholder="Pharmacy Name"
-          />
-          <label for="pharmacyNameInput">Pharmacy Name</label>
+      <!-- Business Type Selection (hidden by default) -->
+      <div id="businessTypeSection" class="business-type-select text-start mb-3" style="display: none;">
+        <label class="form-label fw-bold small">Business Type</label>
+        <div class="d-flex gap-2">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="businessType" id="typePharmacy" value="pharmacy" checked>
+            <label class="form-check-label" for="typePharmacy">
+              <i class="bi bi-shop me-1"></i> Pharmacy
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="businessType" id="typeHospital" value="hospital">
+            <label class="form-check-label" for="typeHospital">
+              <i class="bi bi-hospital me-1"></i> Hospital
+            </label>
+          </div>
         </div>
+      </div>
 
-        <div class="form-floating mb-3 text-start">
-          <input
-            type="email"
-            class="form-control"
-            id="emailInput"
-            placeholder="name@example.com"
-            required
-          />
-          <label for="emailInput">Email address</label>
+      <input type="hidden" id="roleInput" value="patient" />
+
+      <div class="row g-2">
+        <div class="col-md-6">
+          <div class="form-floating mb-3 text-start">
+            <input type="text" class="form-control" id="firstName" placeholder="John" required />
+            <label for="firstName">First Name</label>
+          </div>
         </div>
-
-        <div class="form-floating mb-3 text-start">
-          <input
-            type="password"
-            class="form-control"
-            id="passwordInput"
-            placeholder="Password"
-            required
-          />
-          <label for="passwordInput">Password</label>
+        <div class="col-md-6">
+          <div class="form-floating mb-3 text-start">
+            <input type="text" class="form-control" id="lastName" placeholder="Doe" required />
+            <label for="lastName">Last Name</label>
+          </div>
         </div>
-        <div
-          class="form-floating mb-4 text-start"
-          id="locationField"
-          style="display: none"
-        >
-          <select class="form-control" id="locationInput">
-            <option selected disabled value="">Select Location</option>
-            <option value="Cairo">Cairo</option>
-            <option value="Giza">Giza</option>
-            <option value="Alexandria">Alexandria</option>
-          </select>
-          <label for="locationInput">Pharmacy Location</label>
-        </div>
-        <div
-          class="form-floating mb-4 text-start"
-          id="licenseField"
-          style="display: none"
-        >
-          <input
-            type="text"
-            class="form-control"
-            id="licenseInput"
-            placeholder="License Number"
-          />
-          <label for="licenseInput">Pharmacy License Number</label>
-        </div>
-        
+      </div>
 
-        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
-          Create Account
-        </button>
-      </form>
+      <div class="form-floating mb-3 text-start" id="businessNameField" style="display: none">
+        <input type="text" class="form-control" id="businessNameInput" placeholder="Business Name" />
+        <label for="businessNameInput">Business Name</label>
+      </div>
 
-      <p class="text-muted small mb-0">
-        Already have an account?
-        <a href="login.html" class="text-decoration-none fw-bold">Log in</a>
-      </p>
-    </div>
+      <div class="form-floating mb-3 text-start">
+        <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" required />
+        <label for="emailInput">Email address</label>
+      </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
-    />
-    <script src="js/auth.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/cart.js"></script>
-    <script>
-      function selectRole(role) {
-        document
-          .querySelectorAll(".role-card")
-          .forEach((el) => el.classList.remove("active"));
-        event.currentTarget.classList.add("active");
-        document.getElementById("roleInput").value = role;
+      <div class="form-floating mb-3 text-start">
+        <input type="password" class="form-control" id="passwordInput" placeholder="Password" required />
+        <label for="passwordInput">Password</label>
+      </div>
 
-        // Show license field only for pharmacy
-        const licenseField = document.getElementById("licenseField");
-        if (role === "pharmacy") {
-          licenseField.style.display = "block";
-          document.getElementById("licenseInput").required = true;
-          document.getElementById("pharmacyNameField").style.display = "block";
-          document.getElementById("pharmacyNameInput").required = true;
-          document.getElementById("locationField").style.display = "block";
-          document.getElementById("locationInput").required = true;
-        } else {
-          licenseField.style.display = "none";
-          document.getElementById("licenseInput").required = false;
-          document.getElementById("pharmacyNameField").style.display = "none";
-          document.getElementById("pharmacyNameInput").required = false;
-          document.getElementById("locationField").style.display = "none";
-          document.getElementById("locationInput").required = false;
-        }
+      <div class="form-floating mb-3 text-start" id="locationField" style="display: none">
+        <select class="form-control" id="locationInput">
+          <option selected disabled value="">Select Location</option>
+          <option value="Cairo">Cairo</option>
+          <option value="Giza">Giza</option>
+          <option value="Alexandria">Alexandria</option>
+        </select>
+        <label for="locationInput">Location</label>
+      </div>
+
+      <div class="form-floating mb-4 text-start" id="licenseField" style="display: none">
+        <input type="text" class="form-control" id="licenseInput" placeholder="License Number" />
+        <label for="licenseInput">License Number</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+        Create Account
+      </button>
+    </form>
+
+    <p class="text-muted small mb-0">
+      Already have an account?
+      <a href="login.html" class="text-decoration-none fw-bold">Log in</a>
+    </p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    function selectRole(role) {
+      document.querySelectorAll(".role-card").forEach((el) => el.classList.remove("active"));
+
+      if (role === "patient") {
+        document.getElementById("patientRoleCard").classList.add("active");
+        document.getElementById("roleInput").value = "patient";
+        hideBusinessFields();
+      } else {
+        document.getElementById("businessRoleCard").classList.add("active");
+        // Get selected business type
+        const businessType = document.querySelector('input[name="businessType"]:checked').value;
+        document.getElementById("roleInput").value = businessType;
+        showBusinessFields();
       }
-      document.addEventListener("DOMContentLoaded", () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const role = urlParams.get("role");
-        if (role === "pharmacy") {
-          document
-            .querySelectorAll(".role-card")
-            .forEach((el) => el.classList.remove("active"));
-          document.getElementById("pharmacyRoleCard").classList.add("active");
-          licenseField.style.display = "block";
-          document.getElementById("licenseInput").required = true;
-          document.getElementById("pharmacyNameField").style.display = "block";
-          document.getElementById("pharmacyNameInput").required = true;
-          document.getElementById("locationField").style.display = "block";
-          document.getElementById("locationInput").required = true;
-          document.getElementById("roleInput").value = "pharmacy";
-        } else {
-          document
-            .querySelectorAll(".role-card")
-            .forEach((el) => el.classList.remove("active"));
-          document.getElementById("patientRoleCard").classList.add("active");
-          licenseField.style.display = "none";
-          document.getElementById("licenseInput").required = false;
-          document.getElementById("pharmacyNameField").style.display = "none";
-          document.getElementById("pharmacyNameInput").required = false;
-          document.getElementById("locationField").style.display = "none";
-          document.getElementById("locationInput").required = false;
-        }
+    }
+
+    function showBusinessFields() {
+      document.getElementById("businessTypeSection").style.display = "block";
+      document.getElementById("licenseField").style.display = "block";
+      document.getElementById("licenseInput").required = true;
+      document.getElementById("businessNameField").style.display = "block";
+      document.getElementById("businessNameInput").required = true;
+      document.getElementById("locationField").style.display = "block";
+      document.getElementById("locationInput").required = true;
+    }
+
+    function hideBusinessFields() {
+      document.getElementById("businessTypeSection").style.display = "none";
+      document.getElementById("licenseField").style.display = "none";
+      document.getElementById("licenseInput").required = false;
+      document.getElementById("businessNameField").style.display = "none";
+      document.getElementById("businessNameInput").required = false;
+      document.getElementById("locationField").style.display = "none";
+      document.getElementById("locationInput").required = false;
+    }
+
+    // Update role when business type changes
+    document.querySelectorAll('input[name="businessType"]').forEach((radio) => {
+      radio.addEventListener("change", (e) => {
+        document.getElementById("roleInput").value = e.target.value;
+        // Update business name label
+        const label = document.querySelector('#businessNameField label');
+        label.textContent = e.target.value === "pharmacy" ? "Pharmacy Name" : "Hospital Name";
       });
-    </script>
-  </body>
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const role = urlParams.get("role");
+
+      if (role === "pharmacy" || role === "hospital") {
+        selectRole("business");
+        if (role === "hospital") {
+          document.getElementById("typeHospital").checked = true;
+          document.getElementById("roleInput").value = "hospital";
+        }
+      }
+    });
+  </script>
+</body>
+
 </html>
