@@ -307,8 +307,13 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
   const isPatient = !currentUser || currentUser.role === "patient";
 
   // Filter listings based on user type
+  const today = new Date();
   let listings = listingsData.filter((l) => {
     if (l.quantity <= 0 || l.status === "Sold Out") return false;
+    
+    // Filter out expired items
+    const expiry = new Date(l.expiryDate);
+    if (expiry <= today) return false;
 
     // Patients should NOT see B2B listings at all
     if (isPatient && l.listingType === "B2B") return false;
@@ -549,9 +554,12 @@ function applyFilters() {
   );
   const categories = Array.from(categoryCheckboxes).map((cb) => cb.value);
 
+  const today = new Date();
   const filtered = db.listings.filter((listing) => {
-    // Filter out sold out items
+    // Filter out sold out and expired items
     if (listing.quantity <= 0 || listing.status === "Sold Out") return false;
+    const expiry = new Date(listing.expiryDate);
+    if (expiry <= today) return false;
 
     const drug = db.drugs.find((d) => d.id === listing.drugId);
     const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
@@ -697,6 +705,21 @@ document.addEventListener("DOMContentLoaded", () => {
       select.innerHTML = db.drugs
         .map((d) => `<option value="${d.id}">${d.name}</option>`)
         .join("");
+    }
+    // Set minimum date for expiry (tomorrow)
+    const expiryInput = document.getElementById("newExpiryDate");
+    if (expiryInput) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      expiryInput.min = tomorrow.toISOString().split('T')[0];
+    }
+    // Reset discount calculation when modal closes
+    const addBatchModal = document.getElementById("addBatchModal");
+    if (addBatchModal) {
+      addBatchModal.addEventListener('hidden.bs.modal', function () {
+        document.getElementById("addBatchForm").reset();
+        document.getElementById("discountCalculation").style.display = "none";
+      });
     }
     // Update orders badge
     const userStr = localStorage.getItem("currentUser");
