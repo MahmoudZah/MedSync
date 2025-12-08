@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing - MedSync</title>
+    <meta name="description"
+        content="MedSync pricing plans for businesses. Choose from Basic, Professional, or Enterprise tiers." />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+
+        .pricing-hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.08) 0%, rgba(46, 204, 113, 0.08) 100%);
+        }
+
+        .pricing-hero h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .pricing-hero h1 span {
+            color: var(--primary-blue);
+        }
+
+        .pricing-hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Segment Tabs */
+        .segment-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .segment-tab {
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border-color);
+            background: white;
+            color: var(--text-muted);
+        }
+
+        .segment-tab:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .segment-tab.active {
+            background: linear-gradient(135deg, var(--primary-blue), #2980b9);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .segment-tab i {
+            margin-right: 0.5rem;
+        }
+
+        /* Pricing Cards */
+        .pricing-section {
+            padding: 3rem 0 5rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(52, 152, 219, 0.2);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary-blue);
+            transform: scale(1.03);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.03) translateY(-10px);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary-blue), #2980b9);
+            color: white;
+            padding: 0.4rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pricing-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.75rem;
+        }
+
+        .pricing-icon.basic {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            color: #0ea5e9;
+        }
+
+        .pricing-icon.professional {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            color: var(--secondary-green);
+        }
+
+        .pricing-icon.enterprise {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #f59e0b;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .pricing-card .target {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .price {
+            margin-bottom: 1.5rem;
+        }
+
+        .price .amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .price .currency {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            vertical-align: super;
+        }
+
+        .price .period {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .price-free {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-green);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .features-list li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .features-list li i {
+            color: var(--secondary-green);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .features-list li span {
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .pricing-card .btn {
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .pricing-card .btn-outline-primary {
+            border-width: 2px;
+        }
+
+        .pricing-card .btn-outline-primary:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .pricing-card.featured .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), #2980b9);
+            border: none;
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .pricing-card.featured .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(52, 152, 219, 0.5);
+        }
+
+        /* B2C Section */
+        .b2c-section {
+            display: none;
+        }
+
+        .b2c-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .b2c-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.15);
+        }
+
+        .b2c-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .b2c-icon.free {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: var(--secondary-green);
+        }
+
+        .b2c-icon.visibility {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            color: var(--primary-blue);
+        }
+
+        .b2c-icon.reservation {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #f59e0b;
+        }
+
+        .b2c-content h4 {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .b2c-content p {
+            color: var(--text-muted);
+            margin-bottom: 0;
+            line-height: 1.6;
+        }
+
+        .b2c-price-tag {
+            background: linear-gradient(135deg, var(--secondary-green), #27ae60);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.75rem;
+        }
+
+        /* Section Header */
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-blue), #2980b9);
+            padding: 4rem 0;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-section .btn-light {
+            padding: 0.875rem 2.5rem;
+            font-weight: 600;
+            border-radius: 10px;
+            color: var(--primary-blue);
+        }
+
+        .cta-section .btn-light:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Back Link */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            color: var(--primary-blue);
+            transform: translateX(-3px);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .pricing-card.featured:hover {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pricing-hero h1 {
+                font-size: 2rem;
+            }
+
+            .segment-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .segment-tab {
+                width: 80%;
+                text-align: center;
+            }
+
+            .back-link {
+                position: static;
+                display: inline-flex;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="signup.html?role=company" class="back-link">
+        <i class="bi bi-arrow-left"></i>
+        Back to Sign Up
+    </a>
+
+    <!-- Hero Section -->
+    <section class="pricing-hero">
+        <div class="container">
+            <h1>Simple, Transparent <span>Pricing</span></h1>
+            <p>Choose the plan that best fits your business needs. No hidden fees, no surprises.</p>
+
+            <!-- Segment Tabs -->
+            <div class="segment-tabs">
+                <div class="segment-tab active" onclick="showB2B()" id="b2bTab">
+                    <i class="bi bi-building"></i>
+                    Business (B2B)
+                </div>
+                <div class="segment-tab" onclick="showB2C()" id="b2cTab">
+                    <i class="bi bi-people"></i>
+                    Consumer (B2C)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- B2B Pricing Section -->
+    <section class="pricing-section" id="b2bSection">
+        <div class="container">
+            <div class="section-header">
+                <h2>Business-to-Business Plans</h2>
+                <p>We use a 3-tier pricing model designed for healthcare businesses of all sizes</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <!-- Basic Tier -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card animate-in delay-1">
+                        <div class="pricing-icon basic">
+                            <i class="bi bi-heart-pulse"></i>
+                        </div>
+                        <h3>Basic Tier</h3>
+                        <p class="target">For small clinics</p>
+                        <div class="price">
+                            <span class="price-free">Free</span>
+                        </div>
+                        <ul class="features-list">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Join the network easily</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Upload a limited number of items</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Basic analytics dashboard</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Email support</span>
+                            </li>
+                        </ul>
+                        <a href="signup.html?role=company" class="btn btn-outline-primary">Get Started Free</a>
+                    </div>
+                </div>
+
+                <!-- Professional Tier -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card featured animate-in delay-2">
+                        <div class="featured-badge">Most Popular</div>
+                        <div class="pricing-icon professional">
+                            <i class="bi bi-hospital"></i>
+                        </div>
+                        <h3>Professional Tier</h3>
+                        <p class="target">For larger hospitals</p>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">200</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <ul class="features-list">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span><strong>Unlimited</strong> medicine uploads</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span><strong>Automated integration</strong> with inventory systems</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>No manual data entry required</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Advanced analytics & reports</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Priority support</span>
+                            </li>
+                        </ul>
+                        <a href="signup.html?role=company&type=hospital" class="btn btn-primary">Start Free Trial</a>
+                    </div>
+                </div>
+
+                <!-- Enterprise Tier -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card animate-in delay-3">
+                        <div class="pricing-icon enterprise">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                        <h3>Enterprise Tier</h3>
+                        <p class="target">For large pharmacy chains</p>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">300</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <ul class="features-list">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span><strong>Multi-branch</strong> stock management</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Centralized inventory control</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Cross-location analytics</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Custom API integrations</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Dedicated account manager</span>
+                            </li>
+                        </ul>
+                        <a href="signup.html?role=company&type=pharmacy" class="btn btn-outline-primary">Contact
+                            Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- B2C Section -->
+    <section class="pricing-section b2c-section" id="b2cSection">
+        <div class="container">
+            <div class="section-header">
+                <h2>Business-to-Consumer Strategy</h2>
+                <p>Our consumer strategy focuses on maximizing platform value for everyone</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Free for Users -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="b2c-card animate-in delay-1">
+                        <div class="b2c-icon free">
+                            <i class="bi bi-person-heart"></i>
+                        </div>
+                        <div class="b2c-content">
+                            <h4>Free for Users</h4>
+                            <p>We do not charge patients. We need as many users as possible to make the platform
+                                valuable for hospitals and pharmacies.</p>
+                            <span class="b2c-price-tag">Always Free</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pharmacy Visibility -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="b2c-card animate-in delay-2">
+                        <div class="b2c-icon visibility">
+                            <i class="bi bi-eye"></i>
+                        </div>
+                        <div class="b2c-content">
+                            <h4>Pharmacy Visibility</h4>
+                            <p>We monetize access to users. Pharmacies pay to be seen by customers, increasing their
+                                reach and sales potential.</p>
+                            <span class="b2c-price-tag">Premium Placement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reservation Fee -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="b2c-card animate-in delay-3">
+                        <div class="b2c-icon reservation">
+                            <i class="bi bi-bookmark-check"></i>
+                        </div>
+                        <div class="b2c-content">
+                            <h4>Reservation Fee</h4>
+                            <p>A small $1 fee per reservation when a user wants to hold a medicine for pickup. Ensures
+                                commitment and convenience.</p>
+                            <span class="b2c-price-tag">$1 per reservation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Get Started?</h2>
+            <p>Join thousands of healthcare businesses already saving time and money with MedSync.</p>
+            <a href="signup.html?role=company" class="btn btn-light btn-lg">Create Your Account</a>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showB2B() {
+            document.getElementById('b2bTab').classList.add('active');
+            document.getElementById('b2cTab').classList.remove('active');
+            document.getElementById('b2bSection').style.display = 'block';
+            document.getElementById('b2cSection').style.display = 'none';
+
+            // Re-trigger animations
+            document.querySelectorAll('#b2bSection .animate-in').forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; // Trigger reflow
+                el.style.animation = null;
+            });
+        }
+
+        function showB2C() {
+            document.getElementById('b2cTab').classList.add('active');
+            document.getElementById('b2bTab').classList.remove('active');
+            document.getElementById('b2cSection').style.display = 'block';
+            document.getElementById('b2bSection').style.display = 'none';
+
+            // Re-trigger animations
+            document.querySelectorAll('#b2cSection .animate-in').forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; // Trigger reflow
+                el.style.animation = null;
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -5,14 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shopping Cart - MedSync</title>
-
-  <!-- SEO Meta Tags -->
-  <meta name="description"
-    content="Review your medicine order and proceed to checkout. Secure payment and fast delivery from trusted pharmacies." />
-  <meta name="keywords" content="shopping cart, medicine cart, checkout, buy medicine, order medicine online" />
-  <meta name="author" content="MedSync" />
-  <meta name="robots" content="noindex, nofollow" />
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="css/style.css" />
@@ -23,7 +15,7 @@
       padding: 1rem;
       cursor: pointer;
       transition: all 0.3s ease;
-      background: var(--surface-white);
+      background: white;
     }
 
     .delivery-option:hover {
@@ -263,103 +255,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
-  <script src="js/theme.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script src="js/cart.js"></script>
-  <script>
-    let currentDeliveryMethod = 'delivery';
-    let currentDeliveryFee = 0;
-    let cartSubtotal = 0;
-
-    function selectDeliveryMethod(method) {
-      currentDeliveryMethod = method;
-
-      // Update UI
-      document.querySelectorAll('.delivery-option').forEach(el => el.classList.remove('active'));
-
-      if (method === 'delivery') {
-        document.getElementById('deliveryOption').classList.add('active');
-        document.getElementById('deliveryFields').classList.add('show');
-        document.getElementById('pickupInfo').classList.remove('show');
-        document.getElementById('deliveryFeeRow').style.display = 'flex';
-        document.getElementById('reserveFeeRow').style.display = 'none';
-        document.getElementById('remainingPayment').style.display = 'none';
-        document.getElementById('totalLabel').textContent = 'Total';
-        document.getElementById('checkoutBtnText').textContent = 'Checkout';
-      } else {
-        document.getElementById('pickupOption').classList.add('active');
-        document.getElementById('deliveryFields').classList.remove('show');
-        document.getElementById('pickupInfo').classList.add('show');
-        document.getElementById('deliveryFeeRow').style.display = 'none';
-        document.getElementById('reserveFeeRow').style.display = 'flex';
-        document.getElementById('remainingPayment').style.display = 'block';
-        document.getElementById('totalLabel').textContent = 'Pay Now';
-        document.getElementById('checkoutBtnText').textContent = 'Reserve & Pay';
-        currentDeliveryFee = 0;
-      }
-
-      updateTotals();
-    }
-
-    function updateDeliveryFee() {
-      const select = document.getElementById('citySelect');
-      const selectedOption = select.options[select.selectedIndex];
-
-      if (selectedOption && selectedOption.dataset.fee) {
-        currentDeliveryFee = parseInt(selectedOption.dataset.fee);
-        document.getElementById('deliveryFeeInfo').style.display = 'block';
-        document.getElementById('deliveryFeeText').textContent = `Delivery fee: ${currentDeliveryFee} EGP`;
-      } else {
-        currentDeliveryFee = 0;
-        document.getElementById('deliveryFeeInfo').style.display = 'none';
-      }
-
-      updateTotals();
-    }
-
-    function updateTotals() {
-      const subtotalEl = document.getElementById('cart-subtotal');
-      const subtotalText = subtotalEl.textContent.replace(' EGP', '').replace(',', '');
-      cartSubtotal = parseInt(subtotalText) || 0;
-
-      if (currentDeliveryMethod === 'delivery') {
-        document.getElementById('cart-delivery-fee').textContent = currentDeliveryFee + ' EGP';
-        const total = cartSubtotal + currentDeliveryFee;
-        document.getElementById('cart-total').textContent = total + ' EGP';
-      } else {
-        // Pickup: reservation fee is 50 EGP or full amount if less
-        const reserveFee = Math.min(50, cartSubtotal);
-        const remaining = cartSubtotal - reserveFee;
-
-        document.getElementById('cart-reserve-fee').textContent = reserveFee + ' EGP';
-        document.getElementById('reserveFeeDisplay').textContent = reserveFee + ' EGP';
-        document.getElementById('cart-total').textContent = reserveFee + ' EGP';
-        document.getElementById('remainingAmount').textContent = remaining + ' EGP';
-      }
-    }
-
-    // Show delivery options when cart has items
-    function showDeliveryOptions() {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const optionsCard = document.getElementById('deliveryOptionsCard');
-      if (cart.length > 0 && optionsCard) {
-        optionsCard.style.display = 'block';
-        updateTotals();
-      }
-    }
-
-    // Override renderCart to also update totals
-    const originalRenderCart = window.renderCart;
-    window.renderCart = function () {
-      if (originalRenderCart) originalRenderCart();
-      showDeliveryOptions();
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      showDeliveryOptions();
-    });
-  </script>
 </body>
 
 </html>

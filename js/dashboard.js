@@ -525,6 +525,7 @@ function handleAddBatch() {
     originalPrice: originalPrice,
     discountPrice: discountPrice,
     status: "Available",
+    listingType: "B2C", // Default to B2C (visible to all)
   };
 
   db.listings.push(newListing);

@@ -5,20 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign Up - MedSync</title>
-
-  <!-- SEO Meta Tags -->
-  <meta name="description"
-    content="Create your MedSync account to start buying discounted medicines or register your pharmacy to sell near-expiry medications." />
-  <meta name="keywords" content="sign up, create account, pharmacy registration, patient registration, MedSync join" />
-  <meta name="author" content="MedSync" />
-  <meta name="robots" content="noindex, nofollow" />
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="css/style.css" />
   <style>
     body {
-      background-color: var(--bg-light);
+      background-color: #f0f2f5;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -31,8 +23,8 @@
       max-width: 500px;
       padding: 2rem;
       border-radius: 16px;
-      background: var(--surface-white);
-      box-shadow: var(--shadow-lg);
+      background: white;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
 
     .auth-logo {
@@ -78,7 +70,7 @@
       padding: 0.75rem;
       cursor: pointer;
       transition: all 0.2s;
-      background: var(--surface-white);
+      background: white;
       text-align: center;
     }
 
@@ -222,24 +214,28 @@
           </select>
           <label for="supplierCategory">Supply Category</label>
         </div>
+        <div class="form-floating mb-3 text-start">
+          <textarea class="form-control" id="supplierAddress" placeholder="Address" style="height: 80px"></textarea>
+          <label for="supplierAddress">Business Address</label>
+        </div>
       </div>
 
       <!-- Pharmacy Specific Fields -->
       <div class="company-fields" id="pharmacyFields">
         <div class="form-floating mb-3 text-start">
-          <input type="text" class="form-control" id="businessNameInput" placeholder="Pharmacy Name" />
-          <label for="businessNameInput">Pharmacy Name</label>
+          <input type="text" class="form-control" id="pharmacyName" placeholder="Pharmacy Name" />
+          <label for="pharmacyName">Pharmacy Name</label>
         </div>
         <div class="form-floating mb-3 text-start">
-          <input type="text" class="form-control" id="licenseInput" placeholder="License Number" />
-          <label for="licenseInput">Pharmacy License Number</label>
+          <input type="text" class="form-control" id="pharmacyLicense" placeholder="License Number" />
+          <label for="pharmacyLicense">Pharmacy License Number</label>
         </div>
         <div class="form-floating mb-3 text-start">
           <input type="text" class="form-control" id="pharmacyPhone" placeholder="Phone" />
           <label for="pharmacyPhone">Pharmacy Phone</label>
         </div>
         <div class="form-floating mb-3 text-start">
-          <select class="form-control" id="locationInput">
+          <select class="form-control" id="pharmacyLocation">
             <option selected disabled value="">Select Location</option>
             <option value="Cairo">Cairo</option>
             <option value="Giza">Giza</option>
@@ -247,7 +243,11 @@
             <option value="Mansoura">Mansoura</option>
             <option value="Tanta">Tanta</option>
           </select>
-          <label for="locationInput">Location</label>
+          <label for="pharmacyLocation">Location</label>
+        </div>
+        <div class="form-floating mb-3 text-start">
+          <input type="text" class="form-control" id="pharmacyAddress" placeholder="Street Address" />
+          <label for="pharmacyAddress">Street Address</label>
         </div>
       </div>
 
@@ -276,6 +276,10 @@
           <label for="hospitalBeds">Number of Beds</label>
         </div>
         <div class="form-floating mb-3 text-start">
+          <input type="text" class="form-control" id="hospitalPhone" placeholder="Phone" />
+          <label for="hospitalPhone">Hospital Phone</label>
+        </div>
+        <div class="form-floating mb-3 text-start">
           <select class="form-control" id="hospitalLocation">
             <option selected disabled value="">Select Location</option>
             <option value="Cairo">Cairo</option>
@@ -285,6 +289,10 @@
             <option value="Tanta">Tanta</option>
           </select>
           <label for="hospitalLocation">Location</label>
+        </div>
+        <div class="form-floating mb-3 text-start">
+          <input type="text" class="form-control" id="hospitalAddress" placeholder="Address" />
+          <label for="hospitalAddress">Full Address</label>
         </div>
       </div>
 
@@ -297,20 +305,13 @@
       Already have an account?
       <a href="login.html" class="text-decoration-none fw-bold">Log in</a>
     </p>
-
-    <div class="mt-3">
-      <a href="pricing.html" class="text-decoration-none small text-muted">
-        <i class="bi bi-info-circle me-1"></i>View Pricing Plans
-      </a>
-    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
-  <script src="js/theme.js"></script>
-  <script src="js/app.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
   <script src="js/cart.js"></script>
   <script>
     function selectRole(role) {
@@ -337,9 +338,6 @@
       document.querySelectorAll(".company-type-btn").forEach((el) => el.classList.remove("active"));
       event.currentTarget.classList.add("active");
       document.getElementById("companyTypeInput").value = type;
-
-      // Update roleInput to actual business type for auth.js
-      document.getElementById("roleInput").value = type;
 
       // Hide all company fields first
       hideAllCompanyFields();
@@ -372,15 +370,17 @@
       document.getElementById("supplierTaxId").required = true;
       document.getElementById("supplierPhone").required = true;
       document.getElementById("supplierCategory").required = true;
+      document.getElementById("supplierAddress").required = true;
     }
 
     function showPharmacyFields() {
       const fields = document.getElementById("pharmacyFields");
       fields.style.display = "block";
-      document.getElementById("businessNameInput").required = true;
-      document.getElementById("licenseInput").required = true;
+      document.getElementById("pharmacyName").required = true;
+      document.getElementById("pharmacyLicense").required = true;
       document.getElementById("pharmacyPhone").required = true;
-      document.getElementById("locationInput").required = true;
+      document.getElementById("pharmacyLocation").required = true;
+      document.getElementById("pharmacyAddress").required = true;
     }
 
     function showHospitalFields() {
@@ -390,7 +390,9 @@
       document.getElementById("hospitalLicense").required = true;
       document.getElementById("hospitalType").required = true;
       document.getElementById("hospitalBeds").required = true;
+      document.getElementById("hospitalPhone").required = true;
       document.getElementById("hospitalLocation").required = true;
+      document.getElementById("hospitalAddress").required = true;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -398,23 +400,20 @@
       const role = urlParams.get("role");
       const companyType = urlParams.get("type");
 
-      if (role === "company" || role === "pharmacy" || role === "hospital" || role === "supplier") {
+      if (role === "company") {
         document.querySelectorAll(".role-card").forEach((el) => el.classList.remove("active"));
         document.getElementById("companyRoleCard").classList.add("active");
-        document.getElementById("roleInput").value = role === "company" ? "company" : role;
+        document.getElementById("roleInput").value = "company";
         document.getElementById("companyTypeSection").style.display = "block";
 
-        // Pre-select company type if provided
-        const typeToSelect = companyType || (role !== "company" ? role : null);
-        if (typeToSelect) {
-          document.getElementById("companyTypeInput").value = typeToSelect;
-          document.getElementById("roleInput").value = typeToSelect;
-          const typeBtn = document.querySelector(`.company-type-btn[onclick*="${typeToSelect}"]`);
+        if (companyType) {
+          document.getElementById("companyTypeInput").value = companyType;
+          const typeBtn = document.querySelector(`.company-type-btn[onclick*="${companyType}"]`);
           if (typeBtn) typeBtn.classList.add("active");
 
-          if (typeToSelect === "supplier") showSupplierFields();
-          else if (typeToSelect === "pharmacy") showPharmacyFields();
-          else if (typeToSelect === "hospital") showHospitalFields();
+          if (companyType === "supplier") showSupplierFields();
+          else if (companyType === "pharmacy") showPharmacyFields();
+          else if (companyType === "hospital") showHospitalFields();
         }
       } else {
         document.querySelectorAll(".role-card").forEach((el) => el.classList.remove("active"));

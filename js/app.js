@@ -316,6 +316,7 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
     if (expiry <= today) return false;
 
     // Patients should NOT see B2B listings at all
+    // Listings without listingType are treated as B2C
     if (isPatient && l.listingType === "B2B") return false;
 
     return true;
