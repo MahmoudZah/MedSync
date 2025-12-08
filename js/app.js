@@ -38,7 +38,7 @@ const defaultDb = {
       generic: "Amoxicillin/Clavulanic Acid",
       category: "Antibiotics",
       type: "OTC", // Over-the-counter, anyone can buy
-      image: "https://placehold.co/100x100/e0e0e0/333?text=Augmentin",
+      image: "assets/imgs/medicines/augmentin.jpg",
     },
     {
       id: 2,
@@ -46,7 +46,7 @@ const defaultDb = {
       generic: "Paracetamol/Caffeine",
       category: "Pain Killers",
       type: "OTC",
-      image: "https://placehold.co/100x100/e0e0e0/333?text=Panadol",
+      image: "assets/imgs/medicines/panadol_extra.jpg",
     },
     {
       id: 3,
@@ -54,7 +54,7 @@ const defaultDb = {
       generic: "Diclofenac Potassium",
       category: "Pain Killers",
       type: "OTC",
-      image: "https://placehold.co/100x100/e0e0e0/333?text=Cataflam",
+      image: "assets/imgs/medicines/cataflam.jpg",
     },
     {
       id: 4,
@@ -62,7 +62,7 @@ const defaultDb = {
       generic: "Insulin Glargine",
       category: "Chronic Diseases",
       type: "Restricted", // Only B2B licensed buyers
-      image: "https://placehold.co/100x100/e0e0e0/333?text=Insulin",
+      image: "assets/imgs/medicines/insulin_lantus.jpg",
     },
     {
       id: 5,
@@ -70,7 +70,7 @@ const defaultDb = {
       generic: "Bisoprolol",
       category: "Chronic Diseases",
       type: "Restricted",
-      image: "https://placehold.co/100x100/e0e0e0/333?text=Concor",
+      image: "assets/imgs/medicines/concor.jpg",
     },
     {
       id: 6,
@@ -78,7 +78,7 @@ const defaultDb = {
       generic: "Morphine Sulfate",
       category: "Controlled Substances",
       type: "Restricted",
-      image: "https://placehold.co/100x100/e0e0e0/333?text=Morphine",
+      image: "assets/imgs/medicines/morphine.jpg",
     },
     {
       id: 7,
@@ -86,7 +86,7 @@ const defaultDb = {
       generic: "Tramadol Hydrochloride",
       category: "Controlled Substances",
       type: "Restricted",
-      image: "https://placehold.co/100x100/e0e0e0/333?text=Tramadol",
+      image: "assets/imgs/medicines/tramadol.jpg",
     },
   ],
   pharmacies: [
@@ -310,7 +310,7 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
   const today = new Date();
   let listings = listingsData.filter((l) => {
     if (l.quantity <= 0 || l.status === "Sold Out") return false;
-    
+
     // Filter out expired items
     const expiry = new Date(l.expiryDate);
     if (expiry <= today) return false;
@@ -331,8 +331,31 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
 
   container.innerHTML = listings
     .map((listing) => {
-      const drug = db.drugs.find((d) => d.id === listing.drugId);
-      const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
+      // Use parseInt to handle string/number type mismatch
+      const drug = db.drugs.find((d) => d.id === parseInt(listing.drugId));
+      let pharmacy = db.pharmacies.find((p) => p.id === parseInt(listing.pharmacyId));
+
+      // If pharmacy not found in db, try to find it from db.users who have that pharmacyId
+      if (!pharmacy) {
+        const pharmacyUser = db.users.find(u => u.pharmacyId === parseInt(listing.pharmacyId));
+        if (pharmacyUser) {
+          // Create pharmacy entry and add to db
+          pharmacy = {
+            id: parseInt(listing.pharmacyId),
+            name: pharmacyUser.name || 'Unknown Pharmacy',
+            location: 'Unknown'
+          };
+          db.pharmacies.push(pharmacy);
+          saveDb();
+        }
+      }
+
+      // Skip this listing if drug or pharmacy not found
+      if (!drug || !pharmacy) {
+        console.warn('Listing skipped - missing drug or pharmacy:', listing);
+        return '';
+      }
+
       const expiryStatus = getExpiryStatus(listing.expiryDate);
       const isB2B = listing.listingType === "B2B";
 
@@ -344,25 +367,27 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
         return `
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 border-warning position-relative" style="overflow: hidden;">
-                    <div class="card-body" style="filter: blur(4px); pointer-events: none;">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="d-flex gap-2">
-                              <span class="badge bg-warning text-dark">B2B Exclusive</span>
+                    <div style="filter: blur(4px); pointer-events: none;">
+                        <img src="${drug.image}" alt="${drug.name}" class="card-img-top" style="height: 200px; object-fit: cover; background: #f0f0f0;" />
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-warning text-dark">B2B Exclusive</span>
+                                <small class="text-muted">${listing.quantity} left</small>
                             </div>
-                            <small class="text-muted">${listing.quantity} left</small>
-                        </div>
-                        <h5 class="card-title mb-1">${drug.name}</h5>
-                        <p class="text-muted small mb-3">${drug.generic}</p>
-                        
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-geo-alt me-2 text-primary-blue"></i>
-                            <small>${pharmacy.name}</small>
-                        </div>
+                            
+                            <h5 class="card-title mb-1">${drug.name}</h5>
+                            <p class="text-muted small mb-3">${drug.generic}</p>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-geo-alt me-2 text-primary-blue"></i>
+                                <small>${pharmacy.name}</small>
+                            </div>
 
-                        <div class="d-flex justify-content-between align-items-end mt-3">
-                            <div>
-                                <small class="text-muted text-decoration-line-through d-block">${formatCurrency(listing.originalPrice)}</small>
-                                <span class="text-secondary-green fw-bold fs-5">${formatCurrency(listing.discountPrice)}</span>
+                            <div class="d-flex justify-content-between align-items-end">
+                                <div>
+                                    <small class="text-muted text-decoration-line-through d-block">${formatCurrency(listing.originalPrice)}</small>
+                                    <span class="text-secondary-green fw-bold fs-5">${formatCurrency(listing.discountPrice)}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -382,6 +407,7 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
       return `
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 ${isB2B ? 'border-warning' : ''}">
+                    <img src="${drug.image}" alt="${drug.name}" class="card-img-top" style="height: 200px; object-fit: cover; background: #f0f0f0;" />
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="expiry-badge ${expiryStatus.class}">${expiryStatus.text}</span>
@@ -397,7 +423,7 @@ function renderListings(containerId, limit = null, listingsData = db.listings) {
                             <small>${pharmacy.name}</small>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-end mt-3">
+                        <div class="d-flex justify-content-between align-items-end mt-auto">
                             <div>
                                 <small class="text-muted text-decoration-line-through d-block">${formatCurrency(listing.originalPrice)}</small>
                                 <span class="text-secondary-green fw-bold fs-5">${formatCurrency(listing.discountPrice)}</span>
@@ -561,8 +587,25 @@ function applyFilters() {
     const expiry = new Date(listing.expiryDate);
     if (expiry <= today) return false;
 
-    const drug = db.drugs.find((d) => d.id === listing.drugId);
-    const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
+    const drug = db.drugs.find((d) => d.id === parseInt(listing.drugId));
+    let pharmacy = db.pharmacies.find((p) => p.id === parseInt(listing.pharmacyId));
+
+    // If pharmacy not found, try to create from user with that pharmacyId
+    if (!pharmacy) {
+      const pharmacyUser = db.users.find(u => u.pharmacyId === parseInt(listing.pharmacyId));
+      if (pharmacyUser) {
+        pharmacy = {
+          id: parseInt(listing.pharmacyId),
+          name: pharmacyUser.name || 'Unknown Pharmacy',
+          location: 'Unknown'
+        };
+        db.pharmacies.push(pharmacy);
+        saveDb();
+      }
+    }
+
+    // Skip if drug or pharmacy not found
+    if (!drug || !pharmacy) return false;
 
     // Location Filter
     if (location && !pharmacy.location.includes(location)) return false;

@@ -22,8 +22,13 @@ function addToCart(listingId, quantity) {
     return;
   }
 
-  const drug = db.drugs.find((d) => d.id === listing.drugId);
-  const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
+  const drug = db.drugs.find((d) => d.id === parseInt(listing.drugId));
+  const pharmacy = db.pharmacies.find((p) => p.id === parseInt(listing.pharmacyId));
+
+  if (!drug || !pharmacy) {
+    showToast("Error loading item details.", "error");
+    return;
+  }
 
   if (existingItem) {
     existingItem.quantity += requestedQty;
@@ -102,16 +107,15 @@ function renderCart() {
       total += itemTotal;
       return `
             <div class="d-flex align-items-center mb-3 border-bottom pb-3">
-                <img src="${
-                  item.image
-                }" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                <img src="${item.image
+        }" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                 <div class="flex-grow-1">
                     <h6 class="mb-0">${item.drugName}</h6>
                     <small class="text-muted">${item.pharmacyName}</small>
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <span class="fw-bold text-primary">${formatCurrency(
-                          item.price
-                        )}</span>
+          item.price
+        )}</span>
                         <div class="d-flex align-items-center">
                             <button class="btn btn-sm btn-outline-secondary px-2 py-0" onclick="updateCartItem(${index}, -1)">-</button>
                             <span class="mx-2 small">${item.quantity}</span>
@@ -161,8 +165,18 @@ function openReserveModal(listingId) {
   }
 
   const listing = db.listings.find((l) => l.id === listingId);
-  const drug = db.drugs.find((d) => d.id === listing.drugId);
-  const pharmacy = db.pharmacies.find((p) => p.id === listing.pharmacyId);
+  if (!listing) {
+    showToast("Item not found.", "error");
+    return;
+  }
+
+  const drug = db.drugs.find((d) => d.id === parseInt(listing.drugId));
+  const pharmacy = db.pharmacies.find((p) => p.id === parseInt(listing.pharmacyId));
+
+  if (!drug || !pharmacy) {
+    showToast("Error loading item details.", "error");
+    return;
+  }
 
   document.getElementById("modalDrugName").innerText = drug.name;
   document.getElementById(

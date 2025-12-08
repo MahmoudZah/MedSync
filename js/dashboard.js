@@ -154,14 +154,15 @@ function renderInventoryTable(pharmacyId) {
 
   tbody.innerHTML = listings
     .map((listing) => {
-      const drug = db.drugs.find((d) => d.id === listing.drugId);
+      const drug = db.drugs.find((d) => d.id === parseInt(listing.drugId));
+      if (!drug) return ''; // Skip if drug not found
       const expiryStatus = getExpiryStatus(listing.expiryDate);
       const statusBadge =
         listing.quantity <= 0
           ? '<span class="badge bg-danger bg-opacity-10 text-danger">Sold Out</span>'
           : listing.quantity <= 10
-          ? '<span class="badge bg-warning bg-opacity-10 text-warning">Low Stock</span>'
-          : '<span class="badge bg-success bg-opacity-10 text-success">Active</span>';
+            ? '<span class="badge bg-warning bg-opacity-10 text-warning">Low Stock</span>'
+            : '<span class="badge bg-success bg-opacity-10 text-success">Active</span>';
 
       return `
         <tr class="${listing.quantity <= 0 ? "table-secondary" : ""}">
@@ -171,33 +172,27 @@ function renderInventoryTable(pharmacyId) {
           </td>
           <td><code>#BATCH-${String(listing.id).padStart(4, "0")}</code></td>
           <td>
-            <span class="expiry-badge ${expiryStatus.class}">${
-        listing.expiryDate
-      }</span>
+            <span class="expiry-badge ${expiryStatus.class}">${listing.expiryDate
+        }</span>
           </td>
           <td>${statusBadge}</td>
           <td>
-            <span class="${
-              listing.quantity <= 10 ? "text-warning fw-bold" : ""
-            }">${listing.quantity}</span>
+            <span class="${listing.quantity <= 10 ? "text-warning fw-bold" : ""
+        }">${listing.quantity}</span>
           </td>
           <td>
-            <span class="text-decoration-line-through text-muted me-2">${
-              listing.originalPrice
-            }</span>
-            <span class="text-success fw-bold">${
-              listing.discountPrice
-            } EGP</span>
+            <span class="text-decoration-line-through text-muted me-2">${listing.originalPrice
+        }</span>
+            <span class="text-success fw-bold">${listing.discountPrice
+        } EGP</span>
           </td>
           <td class="text-end pe-4">
-            <button class="btn btn-sm btn-light" onclick="editListing(${
-              listing.id
-            })" title="Edit">
+            <button class="btn btn-sm btn-light" onclick="editListing(${listing.id
+        })" title="Edit">
               <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn btn-sm btn-light text-danger" onclick="deleteListing(${
-              listing.id
-            })" title="Delete">
+            <button class="btn btn-sm btn-light text-danger" onclick="deleteListing(${listing.id
+        })" title="Delete">
               <i class="bi bi-trash"></i>
             </button>
           </td>
@@ -283,17 +278,15 @@ function renderPagination(totalPages, totalItems) {
     <nav>
       <ul class="pagination pagination-sm mb-0">
         <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-          <a class="page-link" href="#" onclick="changePage(${
-            currentPage - 1
-          }); return false;">
+          <a class="page-link" href="#" onclick="changePage(${currentPage - 1
+    }); return false;">
             <i class="bi bi-chevron-left"></i>
           </a>
         </li>
         ${pagesHtml}
         <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-          <a class="page-link" href="#" onclick="changePage(${
-            currentPage + 1
-          }); return false;">
+          <a class="page-link" href="#" onclick="changePage(${currentPage + 1
+    }); return false;">
             <i class="bi bi-chevron-right"></i>
           </a>
         </li>
@@ -373,9 +366,9 @@ function renderOrders() {
       return `
       <tr>
         <td class="ps-4"><code>#ORD-${String(order.id).padStart(
-          4,
-          "0"
-        )}</code></td>
+        4,
+        "0"
+      )}</code></td>
         <td>${order.buyerName || "Customer"}</td>
         <td>
           <small>${itemsText}</small>
@@ -386,9 +379,8 @@ function renderOrders() {
         </td>
         <td>${orderDate}</td>
         <td class="text-end pe-4">
-          ${
-            order.status === "pending"
-              ? `
+          ${order.status === "pending"
+          ? `
             <button class="btn btn-sm btn-success" onclick="updateOrderStatus(${order.id}, 'completed')" title="Mark Complete">
               <i class="bi bi-check-lg"></i>
             </button>
@@ -396,8 +388,8 @@ function renderOrders() {
               <i class="bi bi-x-lg"></i>
             </button>
           `
-              : ""
-          }
+          : ""
+        }
         </td>
       </tr>
     `;
@@ -555,7 +547,7 @@ function editListing(id) {
   const listing = db.listings.find((l) => l.id === id);
   if (!listing) return;
 
-  const drug = db.drugs.find((d) => d.id === listing.drugId);
+  const drug = db.drugs.find((d) => d.id === parseInt(listing.drugId));
 
   // Populate edit modal
   document.getElementById("editListingId").value = listing.id;
